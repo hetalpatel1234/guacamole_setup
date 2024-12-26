@@ -242,4 +242,4 @@ set ip-or-domain = your system ip
 ```
 
 create a connection 
-![alt text](<Screenshot from 2024-12-26 15-00-14.png>)
+![alt text](<WhatsApp Image 2024-12-26 at 15.31.41.jpeg>)
