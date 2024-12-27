@@ -150,8 +150,8 @@ mysql -uroot -p
 Create a database and user:
 ```sql
 CREATE DATABASE guacamole_db;
-CREATE USER 'guac_user'@'localhost' IDENTIFIED BY 'guac_pass';
-GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'guac_user'@'localhost';
+CREATE USER 'guacamole_user'@'localhost' IDENTIFIED BY 'Abcd@123'
+GRANT ALL PRIVILEGES ON database_name.* TO 'guacamole_user'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```
