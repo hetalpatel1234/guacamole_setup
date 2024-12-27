@@ -1,5 +1,5 @@
-# Guacamole Server Setup on Ubuntu
-guacamole_setup_26_Dec_2024
+# Access an android mobile using guacamole server 
+
 
 
 ## Step 1: Install Required Dependencies for Server 
@@ -7,11 +7,11 @@ guacamole_setup_26_Dec_2024
 Update the package list and install required dependencies:
 
 ```bash
-sudo apt update
-sudo apt install -y gcc nano vim curl wget g++ libcairo2-dev libjpeg-turbo8-dev libpng-dev libtool-bin libossp-uuid-dev
-sudo apt install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev build-essential libpango1.0-dev libssh2-1-dev libvncserver-dev libtelnet-dev libpulse-dev libvorbis-dev libwebp-dev
-sudo apt update
-sudo apt install -y freerdp2-dev freerdp2-x11 -y 
+apt update
+apt install -y gcc nano vim curl wget g++ libcairo2-dev libjpeg-turbo8-dev libpng-dev libtool-bin libossp-uuid-dev
+apt install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev build-essential libpango1.0-dev libssh2-1-dev libvncserver-dev libtelnet-dev libpulse-dev libvorbis-dev libwebp-dev
+apt update
+apt install -y freerdp2-dev freerdp2-x11 -y 
 ```
 
 
@@ -25,7 +25,7 @@ sudo apt install default-jdk
 ``` 
 Once it is installed, you can check the version installed 
 ```bash
-java –version 
+java --version 
 ``` 
 Install Apache Tomcat 
 ```bash
@@ -38,208 +38,185 @@ Tomcat listens on port 8080 by default and as you can guess, we need to allow ac
 ufw allow 8080/tcp
 ``` 
 
-## Step 3: Apache Tomcat Installed 
+## Step 3: guacd gucamole server  install 
 
+### Download and Compile guacd:
 ```bash
 mkdir guacamole
 cd guacamole
 wget https://archive.apache.org/dist/guacamole/1.5.4/source/guacamole-server-1.5.4.tar.gz
 tar xzf guacamole-server-1.5.4.tar.gz
 cd guacamole-server-1.5.4
-``` 
-```bash
 ./configure --with-init-dir=/etc/init.d
-``` 
-
-![alt text](<Screenshot from 2024-12-26 13-17-42.png>)
-```bash
-make 
-make install  
-ldconfig 
-mkdir -p /etc/guacamole/{extensions,lib} 
 ```
-Create guacd.conf configuration file and edit
+![alt text](<configure.png>)
 ```bash
-vim /etc/guacamole/guacd.conf
+make
+sudo make install
+sudo ldconfig
+```
+
+### Configure guacd:
+
+Create directories:
+```bash
+sudo mkdir -p /etc/guacamole/{extensions,lib}
+```
+
+Edit the configuration file:
+```bash
+sudo vim /etc/guacamole/guacd.conf
+```
+
+Add the following content:
+```
 [daemon]
 pid_file = /var/run/guacd.pid
-#log_level = debug
 
 [server]
-#bind_host = localhost
 bind_host = 127.0.0.1
 bind_port = 4822
-
-#[ssl]
-#server_certificate = /etc/ssl/certs/guacd.crt
-#server_key = /etc/ssl/private/guacd.key                                        
 ```
 
-Refresh systemd for it to find the guacd (Guacamole proxy daemon) service installed in /etc/init.d/ directory.
-
+Reload systemd and enable guacd:
 ```bash
 systemctl daemon-reload
-```
-Once reloaded, start and enable the guacd service.
-
-```bash
 systemctl restart guacd
-systemctl enable guacd
-```
-please check service status
-
-```bash
 systemctl status guacd
 ```
 
+---
 
 ## Step 4: Install the Guacamole Web Application
 
-There are two critical files involved in the deployment of Guacamole: guacamole.war, which is the file containing the web application, and guacamole.properties, the main configuration file for Guacamole.
-
-
+### Deploy the Web Application:
 ```bash
 cd guacamole
 wget https://archive.apache.org/dist/guacamole/1.5.4/binary/guacamole-1.5.4.war
 mv guacamole-1.5.4.war /var/lib/tomcat9/webapps/guacamole.war
 ```
 
-Now you need to define how the Guacamole client will connect to the Guacamole server (guacd)
-Create GUACAMOLE_HOME environment variable
+### Set Up Environment Variables:
+Edit `/etc/default/tomcat`:
 ```bash
 vim /etc/default/tomcat
+```
+Add:
+```bash
 GUACAMOLE_HOME=/etc/guacamole
 ```
-edit this file 
+
+Edit `/etc/profile`:
 ```bash
 vim /etc/profile
+```
+Add:
+```bash
 export GUACAMOLE_HOME=/etc/guacamole
 ```
-Create /etc/guacamole/guacamole.properties config file 
+
+### Configure guacamole.properties:
+Create and edit the configuration file:
 ```bash
-guacd-hostname: 127.0.0.1
-guacd-port:     4822
+vim /etc/guacamole/guacamole.properties
 ```
-## Step 5:  Setup Guacamole Database Authentication
-two methodology we used 
-1. user-mapping.xml
-2. mysql database
+Add:
+```
+guacd-hostname: 127.0.0.1
+guacd-port: 4822
+```
 
-put all details related user connection or remote destop device which we want to access
-##
-### 1. user-mapping.xml
-create file user-mapping.xml
+Restart services:
 ```bash
-vim /etc/guacamole/user-mapping.xml
-<user-mapping>
-    <!-- Allow access to a specific SSH server -->
-    <authorize username="guacadmin" password="guacadmin">
-        <connection name="Linux-Server">
-            <protocol>ssh</protocol>
-            <param name="hostname">192.168.x.x</param>  <!-- Only this remote system -->
-            <param name="port">22</param>
-            <param name="username">username</param>
-            <param name="password">passwd</param>
-        </connection>
-    </authorize>
-</user-mapping>
-``` 
-
-```bash
-vim /etc/guacamole/user-mapping.xml
-<?xml version="1.0" encoding="UTF-8"?>
-
-<user-mapping>
-    <authorize username="testuser" password="testpassword">
-        <connection name="My VNC Connection">
-            <protocol>vnc</protocol>
-            <param name="hostname">192.168.x.x</param>
-            <param name="port">5900</param>
-            <param name="password">vnc server passwd </param>
-        </connection>
-    </authorize>
-</user-mapping>
-``` 
-open file and append data in file guacamole.proprties
- ```bash
- vim /etc/guacamole/guacamole.properties
- user-mapping:  /etc/guacamole/user-mapping.xml
- ``` 
- ```bash
 sudo systemctl restart tomcat9 guacd
- ``` 
+```
 
-### 2. mysql database 
+---
 
- ```bash
+## Step 5: Setup database Authentication
+
+Install MySQL:
+```bash
 sudo apt update
 sudo apt upgrade
-apt install mysql-server
-systemctl start mysql.service
- ```
-
- Now log in to the MySQL console
+sudo apt install mysql-server
+sudo systemctl start mysql.service
+```
+Now log in to the MySQL console
  ```bash
 mysql -uroot -p
  ```
-after access a mysql concol Create database
-create a user and create a password for that  
-```bash
-CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
-```
-```bash
-GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'username'@'localhost' WITH GRANT OPTION;
-```
-```bash
+
+Create a database and user:
+```sql
+CREATE DATABASE guacamole_db;
+CREATE USER 'guac_user'@'localhost' IDENTIFIED BY 'guac_pass';
+GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'guac_user'@'localhost';
 FLUSH PRIVILEGES;
-exit;
-```
-Restart MySQL Service
-```bash
-sudo systemctl restart mysql
+EXIT;
 ```
 
-now go to the guacamole directory and MySQL Connector/J (Java Connector)
+Download and configure the MySQL extension:
 ```bash
 cd guacamole
 wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-8.3.0.tar.gz
 tar -xf mysql-connector-j-8.3.0.tar.gz
 cp mysql-connector-j-8.3.0/mysql-connector-j-8.3.0.jar /etc/guacamole/lib/
+
 wget https://downloads.apache.org/guacamole/1.5.4/binary/guacamole-auth-jdbc-1.5.4.tar.gz
 tar -xf guacamole-auth-jdbc-1.5.4.tar.gz
 mv guacamole-auth-jdbc-1.5.4/mysql/guacamole-auth-jdbc-mysql-1.5.4.jar /etc/guacamole/extensions/
 ```
 
-Switch to the extracted JDBC plugin path:
-
+Import SQL schema:
 ```bash
 cd guacamole-auth-jdbc-1.5.4/mysql/schema
+cat *.sql | mysql -u root -p guacamole_db
 ```
-Import the SQL schemas:  add mysql database name  insted of mysql_database_name 
-```bash
-cat *.sql | mysql -u root -p (mysql_database_name)
-```
-modify the properties of Guacamole with mysql data 
-open a file and append data 
+
+Update `guacamole.properties`:
 ```bash
 vim /etc/guacamole/guacamole.properties
-mysql-hostname: localhost 
+```
+Add:
+```
+mysql-hostname: localhost
 mysql-port: 3306
-mysql-database: mysql_database_name 
-mysql-username: mysql_database_user 
-mysql-password: mysql_database_passwd
+mysql-database: guacamole_db
+mysql-username: guac_user
+mysql-password: guac_pass
 ```
+
+Restart services:
 ```bash
-systemctl restart tomcat9 guacd mysql
+sudo systemctl restart tomcat9 guacd mysql
 ```
 
+---
 
-## Step 6: Accessing Guacamole Web Interface
+## Step 6: Access Guacamole Web Interface
 
-set ip-or-domain = your system ip 
-```bash
- http://ip-or-domain-name:8080/guacamole
+Open your browser and navigate to:
 ```
-
-create a connection 
+http://<your-ip-or-domain>:8080/guacamole
+```
 ![alt text](<WhatsApp Image 2024-12-26 at 15.31.41.jpeg>)
+
+
+---
+
+## Step 7: Configure VNC for Android Remote Access
+
+### Install VNC Server on Android
+I install droidVNC-NG application  and after that set configuration 
+
+![alt text](<droidVNC-NG.jpeg>)
+ and go to the 
+ 
+ ```
+http://<your-ip-or-domain>:8080/guacamole
+```
+create a connection go to the setting->connection->Newconnection
+![alt text](<new_connection.jpeg>)
+
+
