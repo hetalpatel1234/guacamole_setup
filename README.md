@@ -198,7 +198,7 @@ sudo systemctl restart tomcat9 guacd mysql
 
 Open your browser and navigate to:
 ```
-http://<your-ip-or-domain>:8080/guacamole
+http://<your-public-ip>:8080/guacamole
 ```
 ![alt text](<WhatsApp Image 2024-12-26 at 15.31.41.jpeg>)
 
