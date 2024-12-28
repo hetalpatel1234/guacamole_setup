@@ -151,7 +151,7 @@ Create a database and user:
 ```sql
 CREATE DATABASE guacamole_db;
 CREATE USER 'guacamole_user'@'localhost' IDENTIFIED BY 'Abcd@123';
-GRANT ALL PRIVILEGES ON database_name.* TO 'guacamole_user'@'localhost';
+GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on *.* TO 'guacamole_user'@'localhost' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 EXIT;
 ```
