@@ -78,6 +78,7 @@ bind_host = 127.0.0.1
 bind_port = 4822
 ```
 
+
 Reload systemd and enable guacd:
 ```bash
 systemctl daemon-reload
@@ -124,6 +125,10 @@ Add:
 ```
 guacd-hostname: 127.0.0.1
 guacd-port: 4822
+```
+
+```bash
+systemctl daemon-reload
 ```
 
 Restart services:
@@ -185,6 +190,9 @@ mysql-port: 3306
 mysql-database: guacamole_db
 mysql-username: guac_user
 mysql-password: guac_pass
+```
+```bash
+systemctl daemon-reload
 ```
 
 Restart services:
