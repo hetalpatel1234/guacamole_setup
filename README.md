@@ -32,7 +32,9 @@ Install Apache Tomcat
 sudo apt install tomcat9 tomcat9-admin tomcat9-common tomcat9-user 
 sudo systemctl enable --now tomcat9 
 sudo systemctl status tomcat9 
-``` 
+```
+![alt text](<tomcat_status.png>)
+
 Tomcat listens on port 8080 by default and as you can guess, we need to allow access to the application remotely by allowing the port on the firewall. 
 ```bash
 ufw allow 8080/tcp
