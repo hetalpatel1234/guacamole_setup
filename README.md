@@ -228,10 +228,10 @@ http://<your-public-ip>:8080/guacamole
 ## Step 7: Configure VNC for Android Remote Access
 
 ### Install VNC Server on Android
-I install droidVNC-NG application  and after that set configuration 
+I install droidVNC-NG application  and set configuration like given in below image 
 
 ![alt text](<droidVNC-NG.jpeg>)
- and go to the 
+ and go to the webapp using below link
  
  ```
 http://<your-ip-or-domain>:8080/guacamole
