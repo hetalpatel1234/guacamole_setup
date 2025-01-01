@@ -88,6 +88,7 @@ systemctl daemon-reload
 systemctl restart guacd
 systemctl status guacd
 ```
+![alt text](<guacd.png>)
 
 ---
 
