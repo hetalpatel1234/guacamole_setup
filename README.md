@@ -238,5 +238,5 @@ http://<your-ip-or-domain>:8080/guacamole
 ```
 create a connection go to the setting->connection->Newconnection
 ![alt text](<new_connection.jpeg>)
-
+[![Video Thumbnail](guacamole_setup.mp4)
 
