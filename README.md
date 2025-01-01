@@ -198,6 +198,14 @@ mysql-password: Abcd@123
 ```bash
 systemctl daemon-reload
 ```
+Access mysqld.cnf File
+Change Bind-Address IP if need 
+You now have access to the MySQL server configuration file. Scroll down to the bind-address line and change the IP address. The current default IP is set to 127.0.0.1. This IP limits MySQL connections to the local machine.
+
+```bash
+vim /etc/mysql/mysql.conf.d/mysqld.cnf
+```
+![alt text](<mysql.png>)
 
 Restart services:
 ```bash
