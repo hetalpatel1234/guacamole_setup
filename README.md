@@ -192,8 +192,8 @@ Add:
 mysql-hostname: localhost
 mysql-port: 3306
 mysql-database: guacamole_db
-mysql-username: guac_user
-mysql-password: guac_pass
+mysql-username: guacamole_user
+mysql-password: Abcd@123
 ```
 ```bash
 systemctl daemon-reload
