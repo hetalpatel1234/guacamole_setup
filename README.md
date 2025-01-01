@@ -75,6 +75,9 @@ Add the following content:
 [daemon]
 pid_file = /var/run/guacd.pid
 
+![alt text](<server_config.png>)
+
+
 [server]
 bind_host = 127.0.0.1
 bind_port = 4822
